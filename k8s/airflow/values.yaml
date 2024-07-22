@@ -1,0 +1,8 @@
+git:
+  dags:
+    enabled: true
+    repositories:
+    - repository: "https://github.com/peter-and-wolf/otus_mlops_k8s_dags.git"
+      branch: "main"
+      name: ""
+      path: "dags"
