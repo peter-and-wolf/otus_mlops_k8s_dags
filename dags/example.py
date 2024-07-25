@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from airflow import DAG
@@ -10,34 +11,34 @@ aws_access_key_id = Secret('env', 'AWS_ACCESS_KEY_ID', 'ya-s3-secret', 'AWS_ACCE
 aws_secret_access_key = Secret('env', 'AWS_SECRET_ACCESS_KEY', 'ya-s3-secret', 'AWS_SECRET_ACCESS_KEY')
 
 def hello_world():
-  #print(aws_access_key_id)
-  #print(aws_secret_access_key)
   print(f'Hello World: {datetime.now()}')
 
 with DAG(dag_id="hello_world_dag",
          start_date=days_ago(2),
-         schedule="* * * * *",
+         schedule="*/5 * * * *",
          catchup=False) as dag:
   
-  task1 = PythonOperator(
-    task_id="hello_world",
-    python_callable=hello_world
-  )
+  filekey = str(uuid.uuid4())
 
-  task2 = KubernetesPodOperator (
+  task1 = KubernetesPodOperator (
     task_id='joke-to-s3',
     name='joke-to-s3',
     namespace='default',
-    image='peterwolf/joke-to-s3:latest',
+    image='peterwolf/joke-to-s3:v1',
     cmds = [
       'python', 'main.py', 
       '--joke-endpoint', 'http://51.250.39.188/api/v1/jokes',
       '--s3-endpoint', 'https://storage.yandexcloud.net',
       '--bucket', 'k8s-outliers',
-      '--filekey', 'jokes/qwerty12345'
+      '--filekey', f'{filekey}'
     ],
     secrets=[aws_access_key_id, aws_secret_access_key],
     in_cluster=True
+  )
+
+  task2 = PythonOperator(
+    task_id="hello_world",
+    python_callable=hello_world
   )
 
 task1 >> task2
