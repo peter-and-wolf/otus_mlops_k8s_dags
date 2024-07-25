@@ -2,7 +2,7 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-ENV LOGLEVEL=DEBUG
+ENV LOG_LEVEL=DEBUG
 
 COPY main.py .
 COPY requirements.txt .

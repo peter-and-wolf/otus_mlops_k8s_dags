@@ -10,8 +10,10 @@ from airflow.utils.dates import days_ago
 aws_access_key_id = Secret('env', 'AWS_ACCESS_KEY_ID', 'ya-s3-secret', 'AWS_ACCESS_KEY_ID')
 aws_secret_access_key = Secret('env', 'AWS_SECRET_ACCESS_KEY', 'ya-s3-secret', 'AWS_SECRET_ACCESS_KEY')
 
-def hello_world():
-  print(f'Hello World: {datetime.now()}')
+
+def hello_world(filekey: str):
+  print(f'{datetime.now()}: {filekey} has uploaded to s3')
+
 
 with DAG(dag_id="hello_world_dag",
          start_date=days_ago(2),
@@ -30,7 +32,7 @@ with DAG(dag_id="hello_world_dag",
       '--joke-endpoint', 'http://51.250.39.188/api/v1/jokes',
       '--s3-endpoint', 'https://storage.yandexcloud.net',
       '--bucket', 'k8s-outliers',
-      '--filekey', f'{filekey}'
+      '--filekey', f'jokes/{filekey}'
     ],
     secrets=[aws_access_key_id, aws_secret_access_key],
     in_cluster=True

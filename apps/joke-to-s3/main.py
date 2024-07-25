@@ -9,7 +9,7 @@ import typer
 
 
 logging.getLogger().setLevel(
-  level=os.environ.get('LOGLEVEL', 'INFO').upper()
+  level=os.environ.get('LOG_LEVEL', 'INFO').upper()
 )
 
 
@@ -53,4 +53,5 @@ def main(joke_endpoint: Annotated[str, typer.Option()],
 
 
 if __name__ == '__main__':
-  typer.run(main)
+  logging.debug('Hello!')
+  #typer.run(main)
