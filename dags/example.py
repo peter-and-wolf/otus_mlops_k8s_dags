@@ -29,6 +29,7 @@ with DAG(dag_id="hello_world_dag",
   task2 = KubernetesPodOperator (
     task_id='joke-to-s3',
     name='joke-to-s3',
+    namespace='default',
     image='peterwolf/joke-to-s3:latest',
     cmds = [
       'python', 'main.py', 
