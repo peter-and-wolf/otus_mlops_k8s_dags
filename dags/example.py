@@ -40,7 +40,10 @@ with DAG(dag_id="hello_world_dag",
 
   task2 = PythonOperator(
     task_id="hello_world",
-    python_callable=hello_world
+    python_callable=hello_world,
+    op_kwargs=dict(
+      filekey=f'jokes/{filekey}'
+    )
   )
 
 task1 >> task2

@@ -44,14 +44,13 @@ def main(joke_endpoint: Annotated[str, typer.Option()],
   session = boto3.session.Session()
   s3 = session.client(
     service_name='s3',
-    endpoint_url='https://storage.yandexcloud.net'
+    endpoint_url=s3_endpoint
   )  
 
   local_path = '/tmp/jokes.csv'
   save_to_local(local_path, joke_endpoint)
-  s3.upload_file(local_path, bucket, filekey)
+  s3.upload_file(local_path, bucket, f'jokes/{filekey}')
 
 
 if __name__ == '__main__':
-  logging.debug('Hello!')
-  #typer.run(main)
+  typer.run(main)
