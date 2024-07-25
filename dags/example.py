@@ -2,14 +2,12 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
-#from airflow.providers.cncf.kubernetes.secret import Secret
+from airflow.providers.cncf.kubernetes.secret import Secret
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from airflow.utils.dates import days_ago
 
-
-#aws_access_key_id = Secret('env', 'AWS_ACCESS_KEY_ID', 'ya-s3-secret', 'AWS_ACCESS_KEY_ID')
-#aws_secret_access_key = Secret('env', 'AWS_SECRET_ACCESS_KEY', 'ya-s3-secret', 'AWS_SECRET_ACCESS_KEY')
-
+aws_access_key_id = Secret('env', 'AWS_ACCESS_KEY_ID', 'ya-s3-secret', 'AWS_ACCESS_KEY_ID')
+aws_secret_access_key = Secret('env', 'AWS_SECRET_ACCESS_KEY', 'ya-s3-secret', 'AWS_SECRET_ACCESS_KEY')
 
 def hello_world():
   #print(aws_access_key_id)
@@ -38,8 +36,8 @@ with DAG(dag_id="hello_world_dag",
       '--bucket', 'k8s-outliers',
       '--filekey', 'jokes/qwerty12345'
     ],
-    #secrets=[aws_access_key_id, aws_secret_access_key],
+    secrets=[aws_access_key_id, aws_secret_access_key],
     in_cluster=True
   )
 
-task2
+task1 >> task2
