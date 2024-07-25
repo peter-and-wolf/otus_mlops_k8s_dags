@@ -37,7 +37,8 @@ with DAG(dag_id="hello_world_dag",
       '--bucket', 'k8s-outliers',
       '--filekey', 'jokes/qwerty12345'
     ],
-    secrets=[aws_access_key_id, aws_secret_access_key]
+    secrets=[aws_access_key_id, aws_secret_access_key],
+    in_cluster=True
   )
 
 task1 >> task2
