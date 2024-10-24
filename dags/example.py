@@ -1,3 +1,4 @@
+import os
 import uuid
 from datetime import datetime
 
@@ -21,6 +22,8 @@ with DAG(dag_id="hello_world_dag",
          catchup=False) as dag:
   
   filekey = str(uuid.uuid4())
+
+  print(os.environ.get('JOKE_API_URL', 'Unknown JOKE_API_URL'))
 
   task1 = KubernetesPodOperator (
     task_id='joke-to-s3',

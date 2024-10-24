@@ -4,7 +4,7 @@ from typing import Any
 import boto3 # type: ignore
 import requests
 
-jokeapi_endpoint = 'http://51.250.39.188/api/v1/jokes'
+jokeapi_endpoint = 'http://51.250.33.39:8000/api/v1/jokes'
 tmp_jokes_path = 'jokes.tmp.csv'
 bucket_name = 'k8s-outliers' 
 bucket_key_name = 'jokes/qwerty12345'
