@@ -100,7 +100,7 @@ kubectl port-forward svc/airflow 8080:8080
 kubectl get secret --namespace "default" airflow -o jsonpath="{.data.airflow-password}" | base64 -d
 ```
 
-Когда залогинитесь, увидете единственный DAG `hello_world_dag`, запустите его, убедитесь, что он работает: забирает данные из `joke-api`, преобразует их в csv и перекладывает в S3.
+Когда залогинитесь, увидите единственный DAG `hello_world_dag`, запустите его, убедитесь, что он работает: забирает данные из `joke-api`, преобразует их в csv и перекладывает в S3.
 
 
 Спасибо! И да пребудет с вами сила. 
