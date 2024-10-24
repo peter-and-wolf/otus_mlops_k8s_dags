@@ -8,10 +8,10 @@
 
 ## Структура репозитория
 
-* `apps/joke-api` – простое FastAPI-приложение, которое которое экспонирует ручку `api/v1/jokes`. Если за нее дернуть, вернется случайная выборка коротких и глупых текстов из файла `apps/joke-api/data/jokes.csv`;
-* `apps/joke-to-s3` – приложение, которое обращается к `apps/joke-api`, получает json с выборкой текстов, преобразует его в csv и загружает его в `s3`.  
-* `dags` – директория содержит скрипты DAG-ов для Airflow, который запущен к кластере кубера.
-* `k8s` – директория содержит необходимые конфигурации для Airflow в кубере. 
+* [apps/joke-api](apps/joke-api) – простое FastAPI-приложение, которое которое экспонирует ручку `api/v1/jokes`. Если за нее дернуть, вернется случайная выборка коротких и глупых текстов из файла [jokes.csv](apps/joke-api/data/jokes.csv);
+* [apps/joke-to-s3](apps/joke-to-s3) – приложение, которое обращается к `apps/joke-api`, получает json с выборкой текстов, преобразует его в csv и загружает его в `s3`.  
+* [dags](dags) – директория содержит скрипты DAG-ов для Airflow, который запущен к кластере кубера.
+* [k8s](k8s) – директория содержит необходимые конфигурации для Airflow в кубере. 
 
 ## Подготовка
 
@@ -46,6 +46,39 @@ curl http://{публичный-IP-вашей-ВМ}:8000/api/v1/jokes
 вернет json-простыню с текстами на кириллице.
 
 ## Конфигурация кубер-кластера
+
+### Установка Airflow
+
+В файле [k8s/airflow/values.yaml](k8s/airflow/values.yaml) в секции `extraEnvVars` измените значения следующих переменных окружения:
+
+* `JOKE_API_ENDPOINT` – url к вашему joke-api, запущенному [тут](#joke-api);
+* `S3_ENDPOINT` – url к вашему S3 (если используете объектное хранилище YC, почти наверняка будет `https://storage.yandexcloud.net`);
+* `S3_BUCKET` – имя бакета, в который хотите складывать файлы;
+* `JOKE_TO_S3_IMAGE` – тег Docker-образа, который вы собрали [тут](#joke-to-s3) и отправили в Dockerhub;
+
+В файле [k8s/ya-s3-secret.yaml](k8s/ya-s3-secret.yaml) в секции `stringData` измените значения следующих переменных окружения:
+
+* `AWS_ACCESS_KEY_ID` – укажите идентификатор вашего секретного ключа для доступа в S3;
+* `AWS_SECRET_ACCESS_KEY` – укажите ваш секретный ключ для доступа в S3;
+
+Установте Airflow из helm-чарта [bitnami](https://artifacthub.io/packages/helm/bitnami/airflow):
+
+```bash
+# Подключаем репозиторий
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# Обновляем индекс
+helm repo update
+
+# Ставим чарт
+helm install airflow bitnami/airflow
+```
+
+Примените конфигурацию:
+
+```bash
+helm upgrade --install airflow bitnami/airflow -f k8s/airflow/values.yaml --set scheduler.automountServiceAccountToken=true --set worker.automountServiceAccountToken=true --set rbac.create=true
+```
 
 
 
