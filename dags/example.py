@@ -14,7 +14,7 @@ aws_secret_access_key = Secret('env', 'AWS_SECRET_ACCESS_KEY', 'ya-s3-secret', '
 
 def hello_world(filekey: str):
   print(f'{datetime.now()}: {filekey} has uploaded to s3')
-  print(os.environ.get('JOKE_API_URL', 'Unknown JOKE_API_URL'))
+ 
 
 
 with DAG(dag_id="hello_world_dag",
@@ -24,16 +24,33 @@ with DAG(dag_id="hello_world_dag",
   
   filekey = str(uuid.uuid4())
 
+  joke_endpoint = os.environ.get('JOKE_API_ENDPOINT')
+  if joke_endpoint is None:
+    raise ValueError('env JOKE_API_ENDPOINT must be set!')
+  
+  s3_endpoint = os.environ.get('S3_ENDPOINT')
+  if s3_endpoint is None:
+    raise ValueError('env S3_ENDPOINT must be set!')
+  
+  s3_bucket = os.environ.get('S3_BUCKET')
+  if s3_bucket is None:
+    raise ValueError('env S3_BUCKET must be set!')
+  
+  joke_to_s3_image = os.environ.get('JOKE_TO_S3_IMAGE')
+  if joke_to_s3_image is None:
+    raise ValueError('env JOKE_TO_S3_IMAGE must be set!')
+  
+
   task1 = KubernetesPodOperator (
     task_id='joke-to-s3',
     name='joke-to-s3',
     namespace='default',
-    image='peterwolf/joke-to-s3:v1',
+    image=joke_to_s3_image,
     cmds = [
       'python', 'main.py', 
-      '--joke-endpoint', 'http://51.250.33.39:8000/api/v1/jokes',
-      '--s3-endpoint', 'https://storage.yandexcloud.net',
-      '--bucket', 'k8s-outliers',
+      '--joke-endpoint', joke_endpoint,
+      '--s3-endpoint', s3_endpoint,
+      '--bucket', s3_bucket,
       '--filekey', f'jokes/{filekey}'
     ],
     secrets=[aws_access_key_id, aws_secret_access_key],
