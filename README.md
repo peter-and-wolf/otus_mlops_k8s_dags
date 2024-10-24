@@ -80,5 +80,30 @@ helm install airflow bitnami/airflow
 helm upgrade --install airflow bitnami/airflow -f k8s/airflow/values.yaml --set scheduler.automountServiceAccountToken=true --set worker.automountServiceAccountToken=true --set rbac.create=true
 ```
 
+Активируйте манифест с секретами для доступа в S3:
+
+```bash
+kubectl apply -f k8s/ya-s3-secret.yaml
+```
+
+## Работа с Airflow
+
+Пробросьте порт из кластера наружу:
+
+```bash
+kubectl port-forward svc/airflow 8080:8080
+```
+
+Идите браузером на `localhost:8080`, откроется морда аутентификации Airflow. Логин – `user`, пароль узнайте вот так:
+
+```bash
+kubectl get secret --namespace "default" airflow -o jsonpath="{.data.airflow-password}" | base64 -d
+```
+
+Когда залогинитесь, увидете единственный DAG `hello_world_dag`, запустите его, убедитесь, что он работает: забирает данные из `joke-api`, преобразует их в csv и перекладывает в S3.
+
+
+Спасибо! И да пребудет с вами сила. 
+
 
 
