@@ -29,7 +29,7 @@ with DAG(dag_id="hello_world_dag",
     image='peterwolf/joke-to-s3:v1',
     cmds = [
       'python', 'main.py', 
-      '--joke-endpoint', 'http://51.250.39.188/api/v1/jokes',
+      '--joke-endpoint', 'http://51.250.33.39/api/v1/jokes',
       '--s3-endpoint', 'https://storage.yandexcloud.net',
       '--bucket', 'k8s-outliers',
       '--filekey', f'jokes/{filekey}'
