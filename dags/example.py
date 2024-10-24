@@ -14,6 +14,7 @@ aws_secret_access_key = Secret('env', 'AWS_SECRET_ACCESS_KEY', 'ya-s3-secret', '
 
 def hello_world(filekey: str):
   print(f'{datetime.now()}: {filekey} has uploaded to s3')
+  print(os.environ.get('JOKE_API_URL', 'Unknown JOKE_API_URL'))
 
 
 with DAG(dag_id="hello_world_dag",
@@ -22,8 +23,6 @@ with DAG(dag_id="hello_world_dag",
          catchup=False) as dag:
   
   filekey = str(uuid.uuid4())
-
-  print(os.environ.get('JOKE_API_URL', 'Unknown JOKE_API_URL'))
 
   task1 = KubernetesPodOperator (
     task_id='joke-to-s3',
